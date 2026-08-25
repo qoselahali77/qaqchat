@@ -25,23 +25,27 @@ class AuthViewModel(
 
     fun checkAuthStatus() {
         viewModelScope.launch {
-            _authState.value = AuthState.Loading
-            val userId = tokenManager.getUserId()
-            val accessToken = tokenManager.getAccessToken()
+            try {
+                _authState.value = AuthState.Loading
+                val userId = try { tokenManager.getUserId() } catch (e: Exception) { null }
+                val accessToken = try { tokenManager.getAccessToken() } catch (e: Exception) { null }
 
-            if (userId != null && accessToken != null) {
-                val cachedUser = authRepository.getCachedUser(userId)
-                if (cachedUser != null) {
-                    _authState.value = AuthState.Authenticated(cachedUser)
-                }
+                if (userId != null && accessToken != null) {
+                    val cachedUser = try { authRepository.getCachedUser(userId) } catch (e: Exception) { null }
+                    if (cachedUser != null) {
+                        _authState.value = AuthState.Authenticated(cachedUser)
+                    }
 
-                val result = authRepository.fetchCurrentUser()
-                if (result.isSuccess) {
-                    _authState.value = AuthState.Authenticated(result.getOrThrow())
-                } else if (cachedUser == null) {
+                    val result = runCatching { authRepository.fetchCurrentUser() }.getOrNull()
+                    if (result != null && result.isSuccess) {
+                        _authState.value = AuthState.Authenticated(result.getOrThrow())
+                    } else if (cachedUser == null) {
+                        _authState.value = AuthState.Unauthenticated()
+                    }
+                } else {
                     _authState.value = AuthState.Unauthenticated()
                 }
-            } else {
+            } catch (e: Exception) {
                 _authState.value = AuthState.Unauthenticated()
             }
         }

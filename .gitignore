@@ -15,5 +15,8 @@ android/local.properties
 android/.idea/
 android/*.iml
 android/*/*.iml
+# APK binaries
+*.apk
+
 .DS_Store
 Thumbs.db

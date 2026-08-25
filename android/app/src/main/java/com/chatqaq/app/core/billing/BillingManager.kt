@@ -32,18 +32,22 @@ class BillingManager(
     private var isConnected = false
 
     fun startConnection(onReady: (() -> Unit)? = null) {
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    isConnected = true
-                    onReady?.invoke()
+        try {
+            billingClient.startConnection(object : BillingClientStateListener {
+                override fun onBillingSetupFinished(billingResult: BillingResult) {
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        isConnected = true
+                        onReady?.invoke()
+                    }
                 }
-            }
 
-            override fun onBillingServiceDisconnected() {
-                isConnected = false
-            }
-        })
+                override fun onBillingServiceDisconnected() {
+                    isConnected = false
+                }
+            })
+        } catch (e: Exception) {
+            isConnected = false
+        }
     }
 
     fun launchPurchase(activity: Activity, productId: String) {

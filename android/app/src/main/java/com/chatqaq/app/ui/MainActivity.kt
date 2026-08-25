@@ -32,13 +32,18 @@ class MainActivity : ComponentActivity() {
         AuthViewModel.Factory(app.authRepository, app.tokenManager)
     }
 
-    private lateinit var billingManager: BillingManager
+    private var billingManager: BillingManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        billingManager = BillingManager(this, lifecycleScope)
-        billingManager.startConnection()
+        try {
+            billingManager = BillingManager(this, lifecycleScope).apply {
+                startConnection()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         setContent {
             ChatQAQTheme {
@@ -69,10 +74,11 @@ class MainActivity : ComponentActivity() {
                             Screen.Wallet -> {
                                 val app = application as ChatApplication
                                 val walletViewModel = remember(state.user.id) {
+                                    val manager = billingManager ?: BillingManager(this@MainActivity, lifecycleScope)
                                     WalletViewModel(
                                         userId = state.user.id,
                                         economyRepository = app.economyRepository,
-                                        billingManager = billingManager
+                                        billingManager = manager
                                     )
                                 }
                                 WalletScreen(

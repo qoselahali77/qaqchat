@@ -55,11 +55,16 @@ class AuthRepository(
                 userDao.insertOrUpdate(UserEntity.fromDomain(user))
                 Result.success(user)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "Registration failed (${response.code()})"
+                val rawError = response.errorBody()?.string()
+                val errorMsg = if (rawError != null && (rawError.contains("<!DOCTYPE", ignoreCase = true) || rawError.contains("<html", ignoreCase = true))) {
+                    "تعذر الاتصال بالخادم السحابي (كود ${response.code()}). يرجى التأكد من تشغيل السيرفر."
+                } else {
+                    rawError ?: "Registration failed (${response.code()})"
+                }
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.localizedMessage ?: "Connection error"))
         }
     }
 
@@ -85,11 +90,16 @@ class AuthRepository(
                 userDao.insertOrUpdate(UserEntity.fromDomain(user))
                 Result.success(user)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "Login failed (${response.code()})"
+                val rawError = response.errorBody()?.string()
+                val errorMsg = if (rawError != null && (rawError.contains("<!DOCTYPE", ignoreCase = true) || rawError.contains("<html", ignoreCase = true))) {
+                    "تعذر الاتصال بالخادم السحابي (كود ${response.code()}). يرجى التأكد من تشغيل السيرفر."
+                } else {
+                    rawError ?: "Login failed (${response.code()})"
+                }
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.localizedMessage ?: "Connection error"))
         }
     }
 
@@ -112,11 +122,16 @@ class AuthRepository(
                 userDao.insertOrUpdate(UserEntity.fromDomain(user))
                 Result.success(user)
             } else {
-                val errorMsg = response.errorBody()?.string() ?: "Google Sign-In failed (${response.code()})"
+                val rawError = response.errorBody()?.string()
+                val errorMsg = if (rawError != null && (rawError.contains("<!DOCTYPE", ignoreCase = true) || rawError.contains("<html", ignoreCase = true))) {
+                    "تعذر الاتصال بالخادم السحابي (كود ${response.code()}). يرجى التأكد من تشغيل السيرفر."
+                } else {
+                    rawError ?: "Google Sign-In failed (${response.code()})"
+                }
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.localizedMessage ?: "Connection error"))
         }
     }
 

@@ -299,12 +299,12 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.4f))
+                        Divider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.4f))
                         Text(
                             text = "  OR  ",
                             style = MaterialTheme.typography.labelSmall.copy(color = TextSecondary)
                         )
-                        HorizontalDivider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.4f))
+                        Divider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.4f))
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

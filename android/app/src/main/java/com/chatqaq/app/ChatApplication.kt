@@ -5,40 +5,36 @@ import com.chatqaq.app.core.network.ApiClient
 import com.chatqaq.app.core.network.TokenManager
 import com.chatqaq.app.data.local.AppDatabase
 import com.chatqaq.app.data.repository.AuthRepository
+import com.chatqaq.app.data.repository.EconomyRepository
 
 class ChatApplication : Application() {
 
-    lateinit var database: AppDatabase
-        private set
+    val database: AppDatabase by lazy {
+        AppDatabase.getInstance(applicationContext)
+    }
 
-    lateinit var tokenManager: TokenManager
-        private set
+    val tokenManager: TokenManager by lazy {
+        TokenManager(applicationContext)
+    }
 
-    lateinit var authRepository: AuthRepository
-        private set
+    val authRepository: AuthRepository by lazy {
+        AuthRepository(
+            apiService = ApiClient.getAuthApiService(applicationContext),
+            userDao = database.userDao(),
+            tokenManager = tokenManager
+        )
+    }
 
-    lateinit var economyRepository: com.chatqaq.app.data.repository.EconomyRepository
-        private set
+    val economyRepository: EconomyRepository by lazy {
+        EconomyRepository(
+            apiService = ApiClient.getEconomyApiService(applicationContext),
+            walletDao = database.walletDao()
+        )
+    }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-
-        database = AppDatabase.getInstance(this)
-        tokenManager = TokenManager(this)
-
-        val apiService = ApiClient.getAuthApiService(this)
-        authRepository = AuthRepository(
-            apiService = apiService,
-            userDao = database.userDao(),
-            tokenManager = tokenManager
-        )
-
-        val economyApiService = ApiClient.getEconomyApiService(this)
-        economyRepository = com.chatqaq.app.data.repository.EconomyRepository(
-            apiService = economyApiService,
-            walletDao = database.walletDao()
-        )
     }
 
     companion object {

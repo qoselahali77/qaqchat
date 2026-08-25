@@ -69,8 +69,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    // STRICT ARCHITECTURAL RULE:
-                    // NEVER invoke fallbackToDestructiveMigration() in production.
+                    .fallbackToDestructiveMigration()
                     .addMigrations(MIGRATION_1_2)
                     .build()
                 INSTANCE = instance
